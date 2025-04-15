@@ -17,6 +17,7 @@ test('login without username', async ({ loginpage }) => {
 })
 
 test('login without username and password', async ({ loginpage }) => {
+    await loginpage.loginIntoApllication("", "");
     await expect(await loginpage.errorCheckOfCredentialByName("username")).toHaveText("Required");
     await expect(await loginpage.errorCheckOfCredentialByName("password")).toHaveText("Required");
 })

@@ -1,6 +1,6 @@
-import { expect, Page } from '@playwright/test'
-import { employee } from '../testData/employeeInformation';
-import { getLocatorByLabel, LocatorByName, selectingPIMMenuByName, status } from '../testData/menus';
+import { Page } from '@playwright/test'
+import { getLocatorByLabel, LocatorByName, selectingPIMMenuByName } from '../testData/menus';
+import { IEmployeeInformationStructure } from '../interface/employee';
 
 
 class PimPage {
@@ -27,17 +27,17 @@ class PimPage {
         return this.page.locator("//p[text()='Successfully Saved']");
     }
 
-    async addEmployee(firstname: string, lastname: string, employeeId: string, username: string, password: string, userStatus?: 'Disabled') {
-        await this.getLocatorByName('First Name').fill(firstname);
-        await this.getLocatorByName('Last Name').fill(lastname);
-        await this.getLocatorByLabel('Employee Id').fill(employeeId);
+    async addEmployee(employeeInformation: IEmployeeInformationStructure) {
+        await this.getLocatorByName('First Name').fill(employeeInformation.firstname);
+        await this.getLocatorByName('Last Name').fill(employeeInformation.lastname);
+        await this.getLocatorByLabel('Employee Id').fill(employeeInformation.employeeId);
         await this.page.locator("//input[@type='checkbox']//..//span").click();
-        await this.getLocatorByLabel('Username').fill(username);
-        if (userStatus == 'Disabled') {
+        await this.getLocatorByLabel('Username').fill(employeeInformation.username);
+        if (employeeInformation.userStatus === 'Disabled') {
             this.page.locator("//input[@value='2']/following-sibling::span").click();
         }
-        await this.getLocatorByLabel('Password').fill(password);
-        await this.getLocatorByLabel('Confirm Password').fill(password);
+        await this.getLocatorByLabel('Password').fill(employeeInformation.password);
+        await this.getLocatorByLabel('Confirm Password').fill(employeeInformation.password);
         await this.page.getByRole('button', { name: 'Save' }).click();
 
     }
@@ -54,6 +54,7 @@ class PimPage {
         await this.navigatingPIMMenuByName('Employee List');
         await this.getLocatorByLabel('Employee Id').fill(id);
         await this.page.getByRole('button', { name: ' Search ' }).click();
+        await this.page.waitForTimeout(4000);
         await this.page.waitForLoadState();
     }
 
@@ -72,7 +73,7 @@ class PimPage {
 
             const resultOfColumns = allRows.nth(i).locator('//*[@class="oxd-table-card"]//div[@role="cell"]');
 
-            console.log(await resultOfColumns.count())
+            console.log(await resultOfColumns.count());
             for (let j = 1; j <= await resultOfColumns.count() - 1; j++) {
 
                 const columnText = await resultOfColumns.nth(j).innerText();

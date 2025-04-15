@@ -1,5 +1,5 @@
 import { credential } from "../testData/credential";
-import { employee } from "../testData/employeeInformation";
+import { employeeData } from "../testData/employeeInformation";
 import { test, expect } from "../fixture/custom";
 
 test.beforeEach('logging into Application', async ({ loginpage }) => {
@@ -15,13 +15,12 @@ test('Adding and Searching of Employee to PIM page', async ({ menupage, pimpage 
     await pimpage.navigatingPIMMenuByName("Add Employee");
     await expect(pimpage.employeeMenuTitle).toContainText("Add Employee");
 
-    const employeeId = employee.empId;
-    await pimpage.addEmployee(employee.firstName, employee.lastname, employeeId, employee.username, employee.password);
+    await pimpage.addEmployee(employeeData);
     await expect(pimpage.notificationStatus).toHaveText("Successfully Saved");
 
-    await pimpage.searchForExistingEmployee(employeeId);
+    await pimpage.searchForExistingEmployee(employeeData.employeeId);
     expect(await pimpage.getallRowsCount()).toEqual(1);
 
     const foundEmployee = await pimpage.getEmployeeData();
-    expect(foundEmployee).toEqual(employeeId);
+    expect(foundEmployee).toEqual(employeeData.employeeId);
 })

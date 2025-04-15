@@ -3,14 +3,14 @@ import MenuPage from '../pages/menu.page';
 import LoginPage from '../pages/login.page';
 import PimPage from '../pages/pim.page';
 
-type MyFixtures = {
+type AllPagesType = {
     menupage: MenuPage;
     loginpage: LoginPage;
     pimpage: PimPage;
 
 };
 
-export const test = base.extend<MyFixtures>({
+export const test = base.extend<AllPagesType>({
     menupage: async ({ page }, use) => {
         await use(new MenuPage(page))
     },

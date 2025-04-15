@@ -1,16 +1,15 @@
-import { faker, Sex } from '@faker-js/faker'
+import { faker } from '@faker-js/faker'
+import { IEmployeeInformationStructure } from '../interface/employee';
 
-const first_name = faker.person.fullName({ sex: 'male' });
+const first_name = faker.person.fullName();
 
-export const employee = {
-    firstName: first_name,
-    middleName: faker.person.middleName('male'),
-    lastname: faker.person.lastName('male'),
-    empId: faker.number.int({ max: 999999999 }).toString(),
+export const employeeData: IEmployeeInformationStructure = {
+    firstname: first_name,
+    lastname: faker.person.lastName(),
+    employeeId: faker.number.int({ max: 999999999 }).toString(),
     username: faker.internet.username({ firstName: first_name }),
     password: faker.internet.password({ length: 20, memorable: true, prefix: 'A1a@' }),
     userStatus: "Disabled"
-
 }
 
 
