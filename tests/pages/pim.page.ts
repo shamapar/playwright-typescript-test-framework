@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test'
-import { getLocatorByLabel, LocatorByName, selectingPIMMenuByName } from '../testData/menus';
+import { ApplicationLabels, PIMMenuOptions } from '../testData/menus';
 import { IEmployeeInformationStructure } from '../interface/employee';
 
 
@@ -9,52 +9,48 @@ class PimPage {
         this.page = page;
     }
 
-    navigatingPIMMenuByName(menuName: selectingPIMMenuByName) {
-        return this.page.locator(`//ul[@data-v-5327b38a]//li//*[text()='${menuName}']`).click();
-    }
-    get employeeMenuTitle() {
-        return this.page.locator("//h6[text()='Add Employee']")
+    async navigatingPIMMenusByName(menuName: PIMMenuOptions) {
+        await this.page.getByRole('link', { name: menuName }).click();
     }
 
-    getLocatorByLabel(label: getLocatorByLabel) {
+    get employeeMenuTitle() {
+        return this.page.getByRole("heading", { name: 'Add Employee' })
+    }
+
+    getInputLocatorByLabel(label: ApplicationLabels) {
         return this.page.locator(`//label[text()="${label}"]/..//following-sibling::div/input`);
     }
 
-    getLocatorByName(name: LocatorByName) {
-        return this.page.getByPlaceholder(name);
-    }
     get notificationStatus() {
-        return this.page.locator("//p[text()='Successfully Saved']");
+        return this.page.getByText('Successfully Saved')
     }
 
     async addEmployee(employeeInformation: IEmployeeInformationStructure) {
-        await this.getLocatorByName('First Name').fill(employeeInformation.firstname);
-        await this.getLocatorByName('Last Name').fill(employeeInformation.lastname);
-        await this.getLocatorByLabel('Employee Id').fill(employeeInformation.employeeId);
+        await this.page.getByPlaceholder('First Name').fill(employeeInformation.firstname);
+        await this.page.getByPlaceholder('Last Name').fill(employeeInformation.lastname);
+        await this.getInputLocatorByLabel('Employee Id').fill(employeeInformation.employeeId);
         await this.page.locator("//input[@type='checkbox']//..//span").click();
-        await this.getLocatorByLabel('Username').fill(employeeInformation.username);
-        if (employeeInformation.userStatus === 'Disabled') {
-            this.page.locator("//input[@value='2']/following-sibling::span").click();
-        }
-        await this.getLocatorByLabel('Password').fill(employeeInformation.password);
-        await this.getLocatorByLabel('Confirm Password').fill(employeeInformation.password);
-        await this.page.getByRole('button', { name: 'Save' }).click();
+        await this.getInputLocatorByLabel('Username').fill(employeeInformation.username);
 
+        if (employeeInformation.userStatus === 'Disabled') {
+            await this.page.getByRole("radio", { name: 'Disabled' }).locator('//following-sibling::span').click();
+        }
+        await this.getInputLocatorByLabel('Password').fill(employeeInformation.password);
+        await this.getInputLocatorByLabel('Confirm Password').fill(employeeInformation.password);
+        await this.page.getByRole('button', { name: 'Save' }).click();
     }
 
     async getallRowsCount() {
-        const allRows = this.page.locator('//*[@class="oxd-table-card"]//div[@role="row"]')
+        const allRows = this.page.getByRole('table').getByRole('row').last()
         const tableBody = this.page.locator('//div[@data-v-5a621acd]//span');
         await tableBody.waitFor({ state: 'visible' });
         return await allRows.count();
-
     }
 
     async searchForExistingEmployee(id: string,) {
-        await this.navigatingPIMMenuByName('Employee List');
-        await this.getLocatorByLabel('Employee Id').fill(id);
+        await this.navigatingPIMMenusByName('Employee List');
+        await this.getInputLocatorByLabel('Employee Id').fill(id);
         await this.page.getByRole('button', { name: ' Search ' }).click();
-        await this.page.waitForTimeout(4000);
         await this.page.waitForLoadState();
     }
 
@@ -65,28 +61,17 @@ class PimPage {
             lastName: ''
         }
 
-        const allRows = this.page.locator('//*[@class="oxd-table-card"]//div[@role="row"]')
+        const allRows = await this.page.getByRole('table').getByRole('row').last().getByRole('cell').all();
 
-        // const rowCount = await this.getallRowsCount();
-
-        for (let i = 1; i <= await allRows.count(); i++) {
-
-            const resultOfColumns = allRows.nth(i).locator('//*[@class="oxd-table-card"]//div[@role="cell"]');
-
-            console.log(await resultOfColumns.count());
-            for (let j = 1; j <= await resultOfColumns.count() - 1; j++) {
-
-                const columnText = await resultOfColumns.nth(j).innerText();
-                // if (columnText) {
-                console.log(i, j, columnText);
-                //     // return columnText;
-                // }
-
-            }
+        for (let i = 1; i <= allRows.length - 1; i++) {
+            const columnText = await allRows[i].innerText();
+            if (i == 1) employee.id = columnText;
+            if (i == 2) employee.firstName = columnText;
+            if (i == 3) employee.lastName = columnText;
         }
-        const empId = await this.page.locator('//*[@class="oxd-table-card"]//div[@role="cell"]').nth(1).textContent();
-        return empId;
-    }
 
+        return employee.id;
+    }
 }
+
 export default PimPage;

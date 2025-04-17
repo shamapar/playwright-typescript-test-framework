@@ -19,14 +19,15 @@ class LoginPage {
         return this.page.getByRole("button", { name: "Login" });
     }
     get dashboardTitle() {
-        return this.page.locator("//h6")
+        return this.page.getByRole('heading', { level: 6 })
     }
 
-    async errorCheckOfCredentialByName(name: string) {
-        return this.page.locator(`//input[@name="${name}"]//..//following-sibling::span[contains(@class,"error")]`)
+    requiredErrorLocator(name: string) {
+        return this.page.getByPlaceholder(name).locator("//..//following-sibling::span[contains(@class,'error')]");
     }
-    get invalidErrorCredentialLocator() {
-        return this.page.locator("//p[text()='Invalid credentials']");
+
+    get invalidCredentialError() {
+        return this.page.getByRole("alert")
     }
 
     async loginIntoApllication(username: string, password: string) {

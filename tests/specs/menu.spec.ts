@@ -14,5 +14,6 @@ test('should navigate to Menu by name: PIM', async ({ menupage }) => {
 
 test('should navigate to Menu by name: Admin', async ({ menupage }) => {
     await menupage.navigateToMenu("Admin");
-    await expect(menupage.pageTitle).toHaveText("AdminUser Management");
+    await expect(menupage.pageTitle).toHaveText("Admin");
+    await expect(menupage.pageTitleSecondry).toHaveText("User Management");
 })

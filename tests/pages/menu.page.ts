@@ -6,11 +6,17 @@ class MenuPage {
     constructor(page: Page) {
         this.page = page;
     }
+
     get pageTitle() {
-        return this.page.locator("//span[contains(@class,'topbar-header')]");
+        return this.page.getByRole('heading', { level: 6 }).first()
     }
+
+    get pageTitleSecondry() {
+        return this.page.getByRole('heading', { level: 6 }).last()
+    }
+
     async navigateToMenu(menuName: menuTypes) {
-        await this.page.locator(`//*[text()='${menuName}' and contains(@class,'main-menu')]`).click();
+        await this.page.getByRole('link', { name: menuName }).click();
     }
 }
 

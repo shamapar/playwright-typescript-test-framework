@@ -12,8 +12,8 @@ test('Adding and Searching of Employee to PIM page', async ({ menupage, pimpage 
     await menupage.navigateToMenu("PIM");
     await expect(menupage.pageTitle).toHaveText("PIM");
 
-    await pimpage.navigatingPIMMenuByName("Add Employee");
-    await expect(pimpage.employeeMenuTitle).toContainText("Add Employee");
+    await pimpage.navigatingPIMMenusByName("Add Employee");
+    await expect(pimpage.employeeMenuTitle).toHaveText("Add Employee");
 
     await pimpage.addEmployee(employeeData);
     await expect(pimpage.notificationStatus).toHaveText("Successfully Saved");
