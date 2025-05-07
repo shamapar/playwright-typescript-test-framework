@@ -3,6 +3,11 @@
 ### pre-requisit
 NodeJS
 
+### clone repository
+```
+git clone https://github.com/shamapar/playwright-typescript-test-framework.git
+```
+
 ### install dependencies
 ```
 npm install
